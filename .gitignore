@@ -1,0 +1,33 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+
+# Output folder
+bin/
+build/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dependency & cache
+vendor/
+
+# Log files
+*.log
+
+# Test files
+transactions.json
+*.csv
+
+# Secrets / env (jika nanti dipakai)
+.env
+.env.*

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fraud Risk Visualization</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    canvas { max-width: 600px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <h2>📊 Fraud Risk Level Distribution</h2>
+  <input type="file" id="csvFile" accept=".csv" />
+  <div>
+    <canvas id="riskChart"></canvas>
+    <canvas id="scoreChart"></canvas>
+  </div>
+
+  <script>
+    document.getElementById("csvFile").addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          const data = results.data;
+          const riskCount = { Low: 0, Medium: 0, High: 0 };
+          const scoreBins = { "0-0.3": 0, "0.3-0.7": 0, "0.7-1.0": 0 };
+
+          data.forEach(row => {
+            const risk = row.RiskLevel;
+            const score = parseFloat(row.FraudScore);
+            if (riskCount[risk] !== undefined) riskCount[risk]++;
+
+            if (score <= 0.3) scoreBins["0-0.3"]++;
+            else if (score <= 0.7) scoreBins["0.3-0.7"]++;
+            else scoreBins["0.7-1.0"]++;
+          });
+
+          // Pie Chart - Risk Level
+          new Chart(document.getElementById("riskChart"), {
+            type: "pie",
+            data: {
+              labels: Object.keys(riskCount),
+              datasets: [{
+                label: "Jumlah Transaksi",
+                data: Object.values(riskCount),
+                backgroundColor: ["#4CAF50", "#FFC107", "#F44336"],
+              }]
+            }
+          });
+
+          // Bar Chart - Score Distribution
+          new Chart(document.getElementById("scoreChart"), {
+            type: "bar",
+            data: {
+              labels: Object.keys(scoreBins),
+              datasets: [{
+                label: "Distribusi Fraud Score",
+                data: Object.values(scoreBins),
+                backgroundColor: "#2196F3"
+              }]
+            },
+            options: {
+              scales: {
+                y: { beginAtZero: true }
+              }
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
